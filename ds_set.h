@@ -1,5 +1,6 @@
 #ifndef ds_set_h_
 #define ds_set_h_
+#include <utility> // pair class
 
 #define DEBUG true
 /*
@@ -120,5 +121,47 @@ class ds_set {
     }
     iterator end () const { return iterator(0); }
 };
+
+template <class T>
+std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
+  /*
+  * Insert Function:
+    - Check if the value exists.
+        - If so, return a pair with an iterator pointing to the value, and bool value of  false
+        - Otherwise, insert the element into the set and return the iterator pointing to it, and a bool value of true
+  */
+  iterator to_find = find(key_value, p);
+  if ( to_find != iterator(0) ) {
+    // if the item does not exist in the set
+    // 1. Create a new tree node for key_value
+    TreeNode<T>* insert_node = new TreeNode<T>(key_value);
+
+    // 2. Find where in the tree the item belongs and add it
+    TreeNode<T>* node = root_;
+    bool node_found = false;
+    while (!node_found) {
+      if ( node->value < key_value ) {
+        if (node->left != 0) node = node->left;
+        else node_found = true;
+      }
+      else if ( node->value > key_value ) {
+        if (node->right != 0) node = node->right;
+        else node_found = true;
+      }
+    }
+
+    // adding it -- lesser value on left, greater value on right
+    if ( node->value > key_value ) node->left = insert_node;
+    else if ( node->value < key_value ) node->right = insert_node;
+
+    return make_pair(iterator(insert_node), true);
+
+    // 3. Increment size value
+    ++this->size_;
+  } else {
+    // it the item exists in the set, return pair of the iterator item and bool val of false
+    return make_pair(to_find, false);
+  }
+}
 
 #endif
