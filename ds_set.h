@@ -77,9 +77,7 @@ class ds_set {
     int size_;
     TreeNode<T>& copy_tree(TreeNode<T>* old_tree) {/*TODO*/}
     void destroy_tree(TreeNode<T>* p) {/*TODO*/}
-    iterator find(const T& key_value, TreeNode<T>* p) {
-      /*TODO*/
-    }
+    iterator find(const T& key_value, TreeNode<T>* p) {}
     std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p){/*TODO*/}
     void erase (T const& key_value, TreeNode<T>*&p) {/*TODO*/}
     void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
@@ -174,6 +172,20 @@ std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
     // it the item exists in the set, return pair of the iterator item and bool val of false
     return make_pair(to_find, false);
   }
+}
+
+template <class T>
+typename iterator ds_set::find(const T& key_value, TreeNode<T>* p) {
+  // Find function should traverse through the tree to see if there is a node
+  // with the same value as key_value, and return the irerator pointing at the
+  // Node. Otherwise, return null iterator;
+  iterator itr = this->begin ();
+  while ( itr != this->end(); ) {
+    if ( *itr == key_value ) return itr;
+    ++itr;
+  }
+  // return null iterator if item is not in the list
+  return iterator (0);
 }
 
 #endif
