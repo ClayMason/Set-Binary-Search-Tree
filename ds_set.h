@@ -13,13 +13,14 @@ template <class T>
 class TreeNode {
   public:
     // CONSTRUCTORS
-    TreeNode() : left(NULL), right(NULL) {}
-    TreeNode(const T& init) : value(init), left(NULL), right(NULL) {}
+    TreeNode() : left(0), right(0), parent(0) {}
+    TreeNode(const T& init) : value(init), left(0), right(0), parent(0) {}
 
     // REPRESENTATION
     T value;
     TreeNode* left;
     TreeNode* right;
+    TreeNode* parent;
 };
 
 template <class T> class ds_set;
@@ -43,7 +44,12 @@ class tree_iterator {
     // iterators equal if ptr is same, not if value is same
     bool operator== (const tree_iterator& r) { return ptr_ == r.ptr_; }
     bool operator!= (const tree_iterator& r) { return ptr_ != r.ptr_; }
-    // TODO: increment and decrement operator overloads
+
+    /*
+     * TODO: increment and decrement operator overloads
+     * Increment and Decrement Operator Overloaders should make the iterator traverse
+     * the tree in an in-order traversal.
+    */
     tree_iterator<T>& operator++ (int) { // itr++
       return 0;
     }
@@ -138,21 +144,27 @@ std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
 
     // 2. Find where in the tree the item belongs and add it
     TreeNode<T>* node = root_;
-    bool node_found = false;
-    while (!node_found) {
-      if ( node->value < key_value ) {
-        if (node->left != 0) node = node->left;
-        else node_found = true;
-      }
-      else if ( node->value > key_value ) {
-        if (node->right != 0) node = node->right;
-        else node_found = true;
-      }
+    if ( root_ == 0 ) { // if there is not root_
+      node = root_;
     }
+    else { // if there is a root_
+      bool node_found = false;
+      while (!node_found) {
+        if ( node->value < key_value ) {
+          if (node->left != 0) node = node->left;
+          else node_found = true;
+        }
+        else if ( node->value > key_value ) {
+          if (node->right != 0) node = node->right;
+          else node_found = true;
+        }
+      }
 
-    // adding it -- lesser value on left, greater value on right
-    if ( node->value > key_value ) node->left = insert_node;
-    else if ( node->value < key_value ) node->right = insert_node;
+      // adding it -- lesser value on left, greater value on right
+      if ( node->value > key_value ) node->left = insert_node;
+      else if ( node->value < key_value ) node->right = insert_node;
+      insert_node->parent = node;
+    }
 
     return make_pair(iterator(insert_node), true);
 
