@@ -140,36 +140,7 @@ std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
     // if the item does not exist in the set
     // 1. Create a new tree node for key_value
     TreeNode<T>* insert_node = new TreeNode<T>(key_value);
-
-    // 2. Find where in the tree the item belongs and add it
-    TreeNode<T>* node = root_;
-    if ( root_ == 0 ) { // if there is not root_
-      node = root_;
-      node->parent = 0;
-    }
-    else { // if there is a root_
-      bool node_found = false;
-      while (!node_found) {
-        if ( node->value < key_value ) {
-          if (node->left != 0) node = node->left;
-          else node_found = true;
-        }
-        else if ( node->value > key_value ) {
-          if (node->right != 0) node = node->right;
-          else node_found = true;
-        }
-      }
-
-      // adding it -- lesser value on left, greater value on right
-      if ( node->value > key_value ) node->left = insert_node;
-      else if ( node->value < key_value ) node->right = insert_node;
-      insert_node->parent = node;
-    }
-
-    return make_pair(iterator(insert_node), true);
-
-    // 3. Increment size value
-    ++this->size_;
+    return insert(inset_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
     return make_pair(to_find, false);
@@ -193,6 +164,35 @@ typename iterator ds_set::find(const T& key_value, TreeNode<T>* p) {
 template <class T>
 std::pair<iterator, bool> ds_set::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
   // TODO
+  TreeNode<T>* parent_node = p;
+  if ( root_ == 0 ) { // if there is not root_
+    this->root_ = key_node;
+    this->root_->parent = 0;
+  }
+  else { // if there is a root_
+
+    // finding which parent node to add key_node to as a child
+    bool node_found = false;
+    while (!node_found) {
+      if ( parent_node->value < key_value ) {
+        if (parent_node->left != 0) parent_node = node->left;
+        else parent_node_found = true;
+      }
+      else if ( parent_node->value > key_value ) {
+        if (parent_node->right != 0) parent_node = parent_node->right;
+        else node_found = true;
+      }
+    }
+
+    // adding it -- lesser value on left, greater value on right
+    if ( parent_node->value > key_value ) parent_node->left = key_node;
+    else if ( parent_node->value < key_value ) parent_node->right = key_node;
+    key_node->parent = parent_node;
+  }
+  // 3. Increment size value
+  ++this->size_;
+  return make_pair(iterator(key_node), true);
+
 }
 
 template <class T>
