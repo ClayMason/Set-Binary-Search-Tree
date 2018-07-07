@@ -82,13 +82,13 @@ template <class T>
 tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
 
   // leaf nodes
-  if ( this->is_leaf() ) {
-    if ( this->is_left_child() ) this->ptr_ = this->ptr_->parent;
+  if ( itr->is_leaf() ) {
+    if ( itr->is_left_child() ) itr->ptr_ = itr->ptr_->parent;
     else {
       // if right leaf
       TreeNode<T>* itr_parent = itr.ptr_->parent;
       TreeNode<T>* itr_child = itr.ptr_;
-      while ( itr_child !=0 && itr_parent !=0 && itr_child.is_left_child() ) {
+      while ( itr_child !=0 && itr_parent !=0 && !itr_child.is_left_child() ) {
         itr_child = itr_parent;
         itr_parent = itr_parent->parent;
       }
@@ -102,7 +102,7 @@ tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
   else {
     if ( ptr_->right != 0 ) {
       itr.ptr_ = itr.ptr_->right;
-      while ( itr.ptr_->left != 0 ) itr.ptr_ = itr.ptr_->left;
+      if ( itr.ptr_ != 0 ) { while ( itr.ptr_->left != 0 ) itr.ptr_ = itr.ptr_->left; }
     } else itr.ptr_ = 0; // return null iterator
   }
 
@@ -110,6 +110,30 @@ tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
 }
 tree_iterator<T>& tree_iterator<T>::find_prev (list_iterator<T>& itr) {
   // find the node previous to this one in the tree in a reverse in-order traversal
+  if (itr.is_leaf ()){
+    if (itr.is_left_child()) {
+      // left child
+      TreeNode<T>* t_parent = itr.ptr_->parent;
+      TreeNode<T>* t_child = itr.ptr_;
+      while (t_child != 0 && t_parent != 0 && t_child.is_left_child()) {
+        t_child = t_parent;
+        t_parent = t_parent->parent;
+      }
+
+      itr.ptr_ = t_parent;
+    } else {
+      // right child
+      itr.ptr_ = itr.ptr_->parent;
+    }
+  }
+
+  else {
+    // non-leaf
+    itr.ptr_ = itr.ptr_->left;
+    if ( itr.ptr_ != 0 ) { while (itr.ptr_->right != 0) itr.ptr_ = itr.ptr_->right; }
+  }
+
+  return itr;
 }
 
 //-----------------------------------------------------------------------------
