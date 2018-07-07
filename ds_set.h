@@ -178,7 +178,7 @@ class ds_set {
     /* O(1) */bool operator== (const ds_set<T>& old) {return old.root_ == this->root_;}
     /* O(1) */bool operator!= (const ds_set<T>& old) {return old.root_ != this->root_;}
     friend std::ostream& operator<< (std::ostream& ostr, const ds_set<T>& s){
-      s.rpint_in_order(ostr, s.root_);
+      s.print_in_order(ostr, s.root_);
       return ostr;
     }
 
