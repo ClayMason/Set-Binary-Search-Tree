@@ -79,6 +79,7 @@ class ds_set {
     void destroy_tree(TreeNode<T>* p) {/*TODO*/}
     iterator find(const T& key_value, TreeNode<T>* p) {}
     std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p){/*TODO*/}
+    std::pair<iterator, bool> insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {}
     void erase (T const& key_value, TreeNode<T>*&p) {/*TODO*/}
     void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
       if (p) {
@@ -144,6 +145,7 @@ std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
     TreeNode<T>* node = root_;
     if ( root_ == 0 ) { // if there is not root_
       node = root_;
+      node->parent = 0;
     }
     else { // if there is a root_
       bool node_found = false;
@@ -188,4 +190,49 @@ typename iterator ds_set::find(const T& key_value, TreeNode<T>* p) {
   return iterator (0);
 }
 
+template <class T>
+std::pair<iterator, bool> ds_set::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
+  // TODO
+}
+
+template <class T>
+void ds_set::erase (const T& key_value, TreeNode<T>*& p) {
+  /*
+   * Erase Function: Erase the tree node, and, in order to evenly redistribute
+   * the children of the erased node, insert the node back to the root_ of the
+   * Tree to allow it to decide where it goes.
+   * Do not want to re-insert ALL the children nodes, b/c there could be 1000+,
+   * meaning, 1000+ nodes will need to be re-inserted for 1 erase, which is
+   * inefficient, so just re-insert the 2 child nodes (left & right), and have
+   * the trailing nodes just follow where it lands
+   * The more balanced the tree is, the more efficient it is to use the tree.
+  */
+
+  // 1. Check if the value exists in the set
+  typename iterator itr = find(key_value, p);
+  if ( itr != iterator(0) ) {
+    // if the result of find is not a null iterator
+    // 1. Keep track of the left and right children
+    TreeNode<T>* to_left = itr.ptr_->left;
+    TreeNode<T>* to_right = itr.ptr_->right;
+
+    // 2. Set pointers to this tree node to null
+    if (itr.ptr_->parent != 0) {
+      if ( itr.ptr_->parent->right == itr.ptr_ ) itr.ptr_->parent->right = 0;
+      else if ( itr.ptr_->parent->left == itr.ptr_ ) itr.ptr_->parent->left = 0;
+    }
+    if ( to_left != 0 ) to_left->parent = 0;
+    if ( to_right != 0 ) to_right->parent = 0;
+
+    // 3. Delete the current tree node
+    delete itr.ptr_;
+    itr.ptr_ = 0;
+
+    // 4. Redistribute the children of the deleted node
+    insert (to_left, this->root_);
+    insert (to_right, this->root_);
+
+    // DONE
+  }
+}
 #endif
