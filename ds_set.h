@@ -76,6 +76,7 @@ class ds_set {
     TreeNode<T>* root_;
     int size_;
     TreeNode<T>& copy_tree(TreeNode<T>* old_tree) {/*TODO*/}
+    void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {}
     void destroy_tree(TreeNode<T>* p) {/*TODO*/}
     iterator find(const T& key_value, TreeNode<T>* p) {}
     std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p){/*TODO*/}
@@ -257,4 +258,45 @@ void ds_set::destroy_tree(TreeNode<T>* p) {
   delete p;
   p = 0;
 }
+
+template <class T>
+TreeNode<T>& ds_set::copy_tree(TreeNode<T>* old_tree) {
+  // copy the tree_nodes and key_values into this tree
+  // -- recursive
+
+  // 1. Create new Node
+  TreeNode<T>* node_copy = new TreeNode<T>(*old_tree);
+  // check if old_tree is the root
+  if ( old_tree->parent == 0 ) this->root_ = node_copy;
+  copy_sibblings(node_copy, old_tree->left, old_tree->right);
+  return this->root_;
+
+}
+
+void ds_set::copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {
+  // recursive base case -- if both children are null, recursion will end
+  if ( l_child != 0 || r_child != 0 ) {
+    // make copy of the children -- parent already exists
+    if (l_child != 0) {
+      NodeTree<T>* left_copy = new NodeTree<T>(*l_child);
+      // link parent and child nodes
+      parent_->left = left_copy;
+      left_copy->parent = parent_;
+
+      // pass the children of the left child, and our left copy to copy those sibblings to the left
+      copy_sibblings(left_copy, l_child->left, l_child->right);
+    }
+    if (l_child != 0) {
+      NodeTree<T>* right_copy = new NodeTree<T>(*r_child);
+      // link parent and child nodes
+      parent->right = right_copy;
+      right_copy->parent = parent_;
+
+      copy_sibblings(right_copy, r_child->left, r_child->right);
+    }
+
+    // call the recursion on the children
+  }
+}
+
 #endif
