@@ -241,4 +241,20 @@ void ds_set::erase (const T& key_value, TreeNode<T>*& p) {
     // DONE
   }
 }
+
+template <class T>
+void ds_set::destroy_tree(TreeNode<T>* p) {
+  // recursive destroy_tree
+  if ( p->parent != 0 ) {
+    // check which node it is -- left or right
+    if ( p->parent->left == p ) p->parent->left = 0;
+    else if ( p->parent->right == p ) p->parent->right = 0;
+  }
+
+  if ( p->right != 0 ) destroy_tree (p->right);
+  if ( p->left != 0 ) destroy_tree (p->left);
+
+  delete p;
+  p = 0;
+}
 #endif
