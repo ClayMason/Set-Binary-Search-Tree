@@ -15,6 +15,11 @@ class TreeNode {
     // CONSTRUCTORS
     TreeNode() : left(0), right(0), parent(0) {}
     TreeNode(const T& init) : value(init), left(0), right(0), parent(0) {}
+    bool is_leaf () { return left == 0 && right == 0; }
+    bool is_left_child () {
+      if (parent != 0) return parent->left == this;
+      return false;
+    }
 
     // REPRESENTATION
     T value;
@@ -31,10 +36,9 @@ class tree_iterator {
   private:
     // REPRESENTATION
     TreeNode<T>* ptr_;
-    bool is_leaf () { return ptr_->left == 0 && ptr_->right == 0; }
+    bool is_leaf () { return ptr_->is_leaf(); }
     bool is_left_child () {
-      if ( ptr_->parent != 0 ) return ptr_->parent->left == this->ptr_;
-      return false;
+      return ptr_->is_left_child();
     }
     tree_iterator<T>& find_next (list_iterator<T>& itr){}
     tree_iterator<T>& find_prev (list_iterator<T>& itr){}
@@ -76,12 +80,32 @@ class tree_iterator {
 
 template <class T>
 tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
+
+  // leaf nodes
   if ( this->is_leaf() ) {
     if ( this->is_left_child() ) this->ptr_ = this->ptr_->parent;
     else {
       // if right leaf
+      TreeNode<T>* itr_parent = itr.ptr_->parent;
+      TreeNode<T>* itr_child = itr.ptr_;
+      while ( itr_child !=0 && itr_parent !=0 && itr_child.is_left_child() ) {
+        itr_child = itr_parent;
+        itr_parent = itr_parent->parent;
+      }
+
+      // if itr_parent is null, then that is the end of the tree, otherwise, return the itr_parent ptr
+      itr.ptr_ = itr_parent;
     }
   }
+
+  // TODO: non-leaf nodes
+  else {
+    if ( ptr_->right != 0 ) {
+      itr.ptr_ = itr.ptr_->right;
+      while ( itr.ptr_->left != 0 ) itr.ptr_ = itr.ptr_->left;
+    } else itr.ptr_ = 0; // return null iterator
+  }
+
   return itr;
 }
 
