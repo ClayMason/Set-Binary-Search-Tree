@@ -68,10 +68,10 @@ class tree_iterator {
       return find_next (*this);
     }
     tree_iterator<T>& operator-- (int) { // itr--
-      return 0;
+      return find_prev (tree_iterator<T> (*this));
     }
     tree_iterator<T>& operator-- { // --iter
-      return 0;
+      return find_prev (*this);
     }
 
     // make friend to access private ptr_
@@ -107,6 +107,9 @@ tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
   }
 
   return itr;
+}
+tree_iterator<T>& tree_iterator<T>::find_prev (list_iterator<T>& itr) {
+  // find the node previous to this one in the tree in a reverse in-order traversal
 }
 
 //-----------------------------------------------------------------------------
