@@ -31,6 +31,13 @@ class tree_iterator {
   private:
     // REPRESENTATION
     TreeNode<T>* ptr_;
+    bool is_leaf () { return ptr_->left == 0 && ptr_->right == 0; }
+    bool is_left_child () {
+      if ( ptr_->parent != 0 ) return ptr_->parent->left == this->ptr_;
+      return false;
+    }
+    tree_iterator<T>& find_next (list_iterator<T>& itr){}
+    tree_iterator<T>& find_prev (list_iterator<T>& itr){}
   public:
     // CONSTRUCTORS
     tree_iterator() : ptr_(NULL) {}
@@ -40,7 +47,7 @@ class tree_iterator {
 
     // OPERATOR OVERLOADING
     tree_iterator& operator=(const tree_iterator& old) {ptr_=old.ptr; return *this;}
-    const T& operator*() const {return ptr_->value; }
+    const T& operator*() const {return ptr_->value;}
     // iterators equal if ptr is same, not if value is same
     bool operator== (const tree_iterator& r) { return ptr_ == r.ptr_; }
     bool operator!= (const tree_iterator& r) { return ptr_ != r.ptr_; }
@@ -51,10 +58,10 @@ class tree_iterator {
      * the tree in an in-order traversal.
     */
     tree_iterator<T>& operator++ (int) { // itr++
-      return 0;
+      return find_next (tree_iterator<T> (*this));
     }
     tree_iterator<T>& operator++ { // ++iter
-      return 0;
+      return find_next (*this);
     }
     tree_iterator<T>& operator-- (int) { // itr--
       return 0;
@@ -66,6 +73,17 @@ class tree_iterator {
     // make friend to access private ptr_
     friend class ds_set<T>;
 };
+
+template <class T>
+tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
+  if ( this->is_leaf() ) {
+    if ( this->is_left_child() ) this->ptr_ = this->ptr_->parent;
+    else {
+      // if right leaf
+    }
+  }
+  return itr;
+}
 
 //-----------------------------------------------------------------------------
 // DS SET CLASS
@@ -135,7 +153,7 @@ class ds_set {
 };
 
 template <class T>
-std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
+std::pair<iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p) {
   /*
   * Insert Function:
     - Check if the value exists.
@@ -155,7 +173,7 @@ std::pair<iterator, bool> ds_set::insert(const T& key_value, TreeNode<T>*& p) {
 }
 
 template <class T>
-typename iterator ds_set::find(const T& key_value, TreeNode<T>* p) {
+typename iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p) {
   // Find function should traverse through the tree to see if there is a node
   // with the same value as key_value, and return the irerator pointing at the
   // Node. Otherwise, return null iterator;
@@ -169,7 +187,7 @@ typename iterator ds_set::find(const T& key_value, TreeNode<T>* p) {
 }
 
 template <class T>
-std::pair<iterator, bool> ds_set::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
+std::pair<iterator, bool> ds_set<T>::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
   // TODO
   TreeNode<T>* parent_node = p;
   if ( root_ == 0 ) { // if there is not root_
@@ -203,7 +221,7 @@ std::pair<iterator, bool> ds_set::insert(TreeNode<T>*& key_node, TreeNode<T>*& p
 }
 
 template <class T>
-void ds_set::erase (const T& key_value, TreeNode<T>*& p) {
+void ds_set<T>::erase (const T& key_value, TreeNode<T>*& p) {
   /*
    * Erase Function: Erase the tree node, and, in order to evenly redistribute
    * the children of the erased node, insert the node back to the root_ of the
@@ -244,7 +262,7 @@ void ds_set::erase (const T& key_value, TreeNode<T>*& p) {
 }
 
 template <class T>
-void ds_set::destroy_tree(TreeNode<T>* p) {
+void ds_set<T>::destroy_tree(TreeNode<T>* p) {
   // recursive destroy_tree
   if ( p->parent != 0 ) {
     // check which node it is -- left or right
@@ -260,7 +278,7 @@ void ds_set::destroy_tree(TreeNode<T>* p) {
 }
 
 template <class T>
-TreeNode<T>& ds_set::copy_tree(TreeNode<T>* old_tree) {
+TreeNode<T>& ds_set<T>::copy_tree(TreeNode<T>* old_tree) {
   // copy the tree_nodes and key_values into this tree
   // -- recursive
 
@@ -273,7 +291,7 @@ TreeNode<T>& ds_set::copy_tree(TreeNode<T>* old_tree) {
 
 }
 
-void ds_set::copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {
+void ds_set<T>::copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {
   // recursive base case -- if both children are null, recursion will end
   if ( l_child != 0 || r_child != 0 ) {
     // make copy of the children -- parent already exists
