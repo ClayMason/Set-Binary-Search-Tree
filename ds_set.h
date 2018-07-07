@@ -121,8 +121,14 @@ class ds_set {
 
     // ITERATORS
     iterator begin () const {
-      // TODO
-      return 0;
+      // For in-order traversal, the begin point must be the smallest value,
+      // which is the leftmost node in the tree
+      if ( root_ == 0 ) return this->end();
+      else {
+        TreeNode<T>* smallest = root;
+        while (smallest->left != 0) smallest = smallest->left;
+        return iterator(smallest);
+      }
     }
     iterator end () const { return iterator(0); }
 };
