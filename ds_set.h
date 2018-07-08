@@ -2,6 +2,7 @@
 #define ds_set_h_
 #include <utility> // pair class
 #include <iostream>
+#include <string>
 
 #define DEBUG true
 /*
@@ -80,27 +81,30 @@ class tree_iterator {
     friend class ds_set<T>;
 
     template <class U>
-    friend void print_iter (tree_iterator<U>& itr);
+    friend void print_iter (tree_iterator<U>& itr, std::string LABEL);
 };
 // --------------------------------------------------------
 // HELPER FUNCITONS
 template <class T>
-void print_iter (tree_iterator<T>& itr) {
+void print_iter (tree_iterator<T>& itr, std::string LABEL = "DEFAULT") {
   // print the iterator passed into the function
   std::cout << "-----------------------------------------" << std::endl;
-  std::cout << "Iterator" << std::endl;
-  std::cout << "\tvalue: " << *itr << std::endl;
+  std::cout << "Iterator ("<< LABEL <<")" << std::endl;
+  std::cout << "\tnull itr ? ";
+  if ( itr.ptr_ == 0 ) std::cout << "yes" << std::endl;
+  else std::cout << "no => value: " << *itr << std::endl;
+
   std::cout << "\tparent null ? ";
-  if ( itr.ptr_->parent == 0 ) std::cout << "yes" << std::endl;
+  if ( itr.ptr_ == 0 || itr.ptr_->parent == 0 ) std::cout << "yes" << std::endl;
   else std::cout << "no => " << itr.ptr_->parent->value << std::endl;
 
   std::cout << "\tleft child null? ";
-  if ( itr.ptr_->left == 0 ) std::cout << "yes" << std::endl;
+  if ( itr.ptr_ == 0 || itr.ptr_->left == 0 ) std::cout << "yes" << std::endl;
   else std::cout << "no => " << itr.ptr_->left->value << std::endl;
 
   std::cout << "\tright child null? ";
-  if ( itr.ptr_->right == 0 ) std::cout << "yes" << std::endl;
-  else std::cout << "no => " << itr.ptr->right->value << std::endl;
+  if ( itr.ptr_ == 0 || itr.ptr_->right == 0 ) std::cout << "yes" << std::endl;
+  else std::cout << "no => " << itr.ptr_->right->value << std::endl;
   std::cout << "-----------------------------------------" << std::endl;
 }
 // --------------------------------------------------------
@@ -258,6 +262,7 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
   //std::cout << key_value << " - exists? => " << std::endl;
 
   iterator to_find = find(key_value, p);
+  print_iter(to_find, "TO FIND");
 
   // DEBUG
   //if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
@@ -342,6 +347,10 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
   // 3. Increment size value
   ++this->size_;
   //std::cout << "Item added" << std::endl;
+
+  iterator to_print(key_node);
+  print_iter(to_print, "RETURN FROM INSERT");
+
   return std::make_pair(iterator(key_node), true);
 
 }

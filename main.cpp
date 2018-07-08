@@ -24,7 +24,8 @@ int main () {
   std::cout << "Iterator test" << std::endl;
   typename ds_set<int>::iterator itr;
   for ( itr = a.begin(); itr != a.end(); ++itr ) {
-      std::cout << *itr << " ";
+      //std::cout << *itr << " ";
+      print_iter (itr, "Testing");
   }
   std::cout << std::endl;
 
