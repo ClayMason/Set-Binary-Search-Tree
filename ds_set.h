@@ -41,8 +41,8 @@ class tree_iterator {
     bool is_left_child () {
       return ptr_->is_left_child();
     }
-    tree_iterator<T>& find_next (const tree_iterator<T>& iter);
-    tree_iterator<T>& find_prev (const tree_iterator<T>& iter);
+    tree_iterator<T>& find_next (tree_iterator<T>& itr);
+    tree_iterator<T>& find_prev (tree_iterator<T>& itr);
   public:
     // CONSTRUCTORS
     tree_iterator() : ptr_(NULL) {}
@@ -66,6 +66,7 @@ class tree_iterator {
       return find_next (tree_iterator<T> (*this));
     }
     tree_iterator<T>& operator++ () { // ++iter
+      //std::cout << "incrementing" << std::endl;
       return find_next (*this);
     }
     tree_iterator<T>& operator-- (int) { // itr--
@@ -80,8 +81,7 @@ class tree_iterator {
 };
 
 template <class T>
-tree_iterator<T>& tree_iterator<T>::find_next (const tree_iterator<T>& iter) {
-  tree_iterator<T> itr(iter);
+tree_iterator<T>& tree_iterator<T>::find_next (tree_iterator<T>& itr) {
   // leaf nodes
   if ( itr.is_leaf() ) {
     if ( itr.is_left_child() ) itr.ptr_ = itr.ptr_->parent;
@@ -111,9 +111,8 @@ tree_iterator<T>& tree_iterator<T>::find_next (const tree_iterator<T>& iter) {
 }
 
 template <class T>
-tree_iterator<T>& tree_iterator<T>::find_prev (const tree_iterator<T>& iter) {
+tree_iterator<T>& tree_iterator<T>::find_prev (tree_iterator<T>& itr) {
   // find the node previous to this one in the tree in a reverse in-order traversal
-  tree_iterator<T> itr(iter);
   if (itr.is_leaf ()){
     if (itr.is_left_child()) {
       // left child
@@ -174,13 +173,13 @@ class ds_set {
     std::pair<iterator, bool> insert(const T& key_value) {
 
       #if DEBUG
-      std::cout << "Inside Insert: preparing to insert " << key_value << std::endl;
+      //std::cout << "Inside Insert: preparing to insert " << key_value << std::endl;
       #endif
 
       std::pair<iterator, bool> to_return = insert(key_value, root_);
 
       #if DEBUG
-      std::cout << "Right before return" << std::endl;
+      //std::cout << "Right before return" << std::endl;
       #endif
 
       return to_return;
@@ -195,7 +194,7 @@ class ds_set {
       else {
         TreeNode<T>* smallest = root_;
         while (smallest->left != 0) smallest = smallest->left;
-        std::cout << "In begin () : smallest = " << smallest->value << " (size " << this->size_ << ")" << std::endl;
+        //std::cout << "In begin () : smallest = " << smallest->value << " (size " << this->size_ << ")" << std::endl;
         return iterator(smallest);
       }
     }
@@ -230,14 +229,14 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
   */
 
   // DEBUG
-  std::cout << "Insert Func: To Find => ";
-  std::cout << key_value << " - exists? => " << std::endl;
+  //std::cout << "Insert Func: To Find => ";
+  //std::cout << key_value << " - exists? => " << std::endl;
 
   iterator to_find = find(key_value, p);
 
   // DEBUG
-  if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
-  else std::cout << "no" << std::endl;
+  //if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
+  //else std::cout << "no" << std::endl;
 
   if ( to_find == iterator(0) ) { // i'm actually stupid...
     // if the item does not exist in the set
@@ -245,14 +244,14 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
     TreeNode<T>* insert_node = new TreeNode<T>(key_value);
 
     // DEUBUG
-    std::cout << "Entering Second Insert" << std::endl;
+    //std::cout << "Entering Second Insert" << std::endl;
 
     return insert(insert_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
 
     // DEBUG
-    std::cout << "Returning false pair" << std::endl;
+    //std::cout << "Returning false pair" << std::endl;
 
     return std::make_pair(to_find, false);
   }
@@ -263,17 +262,17 @@ typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p)
   // Find function should traverse through the tree to see if there is a node
   // with the same value as key_value, and return the irerator pointing at the
   // Node. Otherwise, return null iterator;
-  std::cout << "inside find function" << std::endl;
+  //std::cout << "inside find function" << std::endl;
   iterator itr = this->begin ();
   while ( itr != this->end() ) {
     if ( *itr == key_value ) {
-      std::cout << "Found value!" << std::endl;
+      //std::cout << "Found value!" << std::endl;
       return itr;
     }
     ++itr;
   }
   // return null iterator if item is not in the list
-  std::cout << "Did not finf the value" << std::endl;
+  //std::cout << "Did not finf the value" << std::endl;
   return iterator (0);
 }
 
@@ -286,14 +285,14 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
     this->root_->parent = 0;
 
     #if DEBUG
-    std::cout << "Insert: setting root_ node" << std::endl;
+    //std::cout << "Insert: setting root_ node" << std::endl;
     #endif
     assert(root_ != 0);
   }
   else { // if there is a root_
 
     #if DEBUG
-    std::cout << "Insert: setting non-root_ node" << std::endl;
+    //std::cout << "Insert: setting non-root_ node" << std::endl;
     #endif
     assert(root_ != 0);
 
@@ -317,7 +316,7 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
   }
   // 3. Increment size value
   ++this->size_;
-  std::cout << "Item added" << std::endl;
+  //std::cout << "Item added" << std::endl;
   return std::make_pair(iterator(key_node), true);
 
 }
