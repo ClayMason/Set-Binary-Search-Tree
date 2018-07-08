@@ -1,2 +1,2 @@
 test: main.cpp
-	g++ main.cpp -o test.o -Wall -g -m32
+	g++ main.cpp -g -Wall -m32 -o test.o
