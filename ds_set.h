@@ -195,6 +195,7 @@ class ds_set {
       else {
         TreeNode<T>* smallest = root_;
         while (smallest->left != 0) smallest = smallest->left;
+        std::cout << "In begin () : smallest = " << smallest->value << " (size " << this->size_ << ")" << std::endl;
         return iterator(smallest);
       }
     }
@@ -229,8 +230,8 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
   */
 
   // DEBUG
-  printf ("Insert Func: To Find => ");
-  printf("%d - exists? => ", key_value);
+  std::cout << "Insert Func: To Find => ";
+  std::cout << key_value << " - exists? => " << std::endl;
 
   iterator to_find = find(key_value, p);
 
@@ -262,12 +263,17 @@ typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p)
   // Find function should traverse through the tree to see if there is a node
   // with the same value as key_value, and return the irerator pointing at the
   // Node. Otherwise, return null iterator;
+  std::cout << "inside find function" << std::endl;
   iterator itr = this->begin ();
   while ( itr != this->end() ) {
-    if ( *itr == key_value ) return itr;
+    if ( *itr == key_value ) {
+      std::cout << "Found value!" << std::endl;
+      return itr;
+    }
     ++itr;
   }
   // return null iterator if item is not in the list
+  std::cout << "Did not finf the value" << std::endl;
   return iterator (0);
 }
 
