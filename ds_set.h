@@ -51,7 +51,7 @@ class tree_iterator {
     ~tree_iterator() {}
 
     // OPERATOR OVERLOADING
-    tree_iterator& operator=(const tree_iterator& old) {ptr_=old.ptr; return *this;}
+    tree_iterator& operator=(const tree_iterator& old) {ptr_=old.ptr_; return *this;}
     const T& operator*() const {return ptr_->value;}
     // iterators equal if ptr is same, not if value is same
     bool operator== (const tree_iterator& r) { return ptr_ == r.ptr_; }
@@ -83,8 +83,8 @@ template <class T>
 tree_iterator<T>& tree_iterator<T>::find_next (const tree_iterator<T>& iter) {
   tree_iterator<T> itr(iter);
   // leaf nodes
-  if ( itr->is_leaf() ) {
-    if ( itr->is_left_child() ) itr->ptr_ = itr->ptr_->parent;
+  if ( itr.is_leaf() ) {
+    if ( itr.is_left_child() ) itr.ptr_ = itr.ptr_->parent;
     else {
       // if right leaf
       TreeNode<T>* itr_parent = itr.ptr_->parent;
@@ -144,26 +144,8 @@ tree_iterator<T>& tree_iterator<T>::find_prev (const tree_iterator<T>& iter) {
 // DS SET CLASS
 template <class T>
 class ds_set {
-  private:
-    // REPRESENTATION
-    typedef tree_iterator<T> iterator;
-    TreeNode<T>* root_;
-    int size_;
-    TreeNode<T>& copy_tree(TreeNode<T>* old_tree);
-    void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child);
-    void destroy_tree(TreeNode<T>* p);
-    iterator find(const T& key_value, TreeNode<T>* p);
-    std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p);
-    std::pair<iterator, bool> insert(TreeNode<T>*& key_node, TreeNode<T>*& p);
-    void erase (T const& key_value, TreeNode<T>*&p);
-    void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
-      if (p) {
-        print_in_order(ostr, p->left);
-        ostr << p->value << std::endl;
-        print_in_order(ostr, p->right);
-      }
-    }
   public:
+    typedef tree_iterator<T> iterator;
     // CONSTRUCTORS
     ds_set () : root_(NULL), size_(0) {}
     ds_set(const ds_set<T>& old) : size_(old.size_) {
@@ -204,10 +186,28 @@ class ds_set {
       }
     }
     iterator end () const { return iterator(0); }
+  private:
+    // REPRESENTATION
+    TreeNode<T>* root_;
+    int size_;
+    TreeNode<T>& copy_tree(TreeNode<T>* old_tree);
+    void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child);
+    void destroy_tree(TreeNode<T>* p);
+    iterator find(const T& key_value, TreeNode<T>* p);
+    std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p);
+    std::pair<iterator, bool> insert(TreeNode<T>*& key_node, TreeNode<T>*& p);
+    void erase (T const& key_value, TreeNode<T>*&p);
+    void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
+      if (p) {
+        print_in_order(ostr, p->left);
+        ostr << p->value << std::endl;
+        print_in_order(ostr, p->right);
+      }
+    }
 };
 
 template <class T>
-std::pair<iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p) {
+std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p) {
   /*
   * Insert Function:
     - Check if the value exists.
@@ -222,7 +222,7 @@ std::pair<iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p)
     return insert(insert_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
-    return make_pair(to_find, false);
+    return std::make_pair(to_find, false);
   }
 }
 
@@ -232,7 +232,7 @@ typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p)
   // with the same value as key_value, and return the irerator pointing at the
   // Node. Otherwise, return null iterator;
   iterator itr = this->begin ();
-  while ( itr != this->end(); ) {
+  while ( itr != this->end() ) {
     if ( *itr == key_value ) return itr;
     ++itr;
   }
@@ -241,7 +241,7 @@ typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p)
 }
 
 template <class T>
-std::pair<iterator, bool> ds_set<T>::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
+std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
   // TODO
   TreeNode<T>* parent_node = p;
   if ( root_ == 0 ) { // if there is not root_
@@ -253,24 +253,24 @@ std::pair<iterator, bool> ds_set<T>::insert(TreeNode<T>*& key_node, TreeNode<T>*
     // finding which parent node to add key_node to as a child
     bool node_found = false;
     while (!node_found) {
-      if ( parent_node->value < key_value ) {
-        if (parent_node->left != 0) parent_node = node->left;
-        else parent_node_found = true;
+      if ( parent_node->value < key_node->value ) {
+        if (parent_node->left != 0) parent_node = parent_node->left;
+        else node_found = true;
       }
-      else if ( parent_node->value > key_value ) {
+      else if ( parent_node->value > key_node->value ) {
         if (parent_node->right != 0) parent_node = parent_node->right;
         else node_found = true;
       }
     }
 
     // adding it -- lesser value on left, greater value on right
-    if ( parent_node->value > key_value ) parent_node->left = key_node;
-    else if ( parent_node->value < key_value ) parent_node->right = key_node;
+    if ( parent_node->value > key_node->value ) parent_node->left = key_node;
+    else if ( parent_node->value < key_node->value ) parent_node->right = key_node;
     key_node->parent = parent_node;
   }
   // 3. Increment size value
   ++this->size_;
-  return make_pair(iterator(key_node), true);
+  return std::make_pair(iterator(key_node), true);
 
 }
 
@@ -345,12 +345,13 @@ TreeNode<T>& ds_set<T>::copy_tree(TreeNode<T>* old_tree) {
 
 }
 
+template <class T>
 void ds_set<T>::copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {
   // recursive base case -- if both children are null, recursion will end
   if ( l_child != 0 || r_child != 0 ) {
     // make copy of the children -- parent already exists
     if (l_child != 0) {
-      NodeTree<T>* left_copy = new NodeTree<T>(*l_child);
+      TreeNode<T>* left_copy = new TreeNode<T>(*l_child);
       // link parent and child nodes
       parent_->left = left_copy;
       left_copy->parent = parent_;
@@ -359,9 +360,9 @@ void ds_set<T>::copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, Tree
       copy_sibblings(left_copy, l_child->left, l_child->right);
     }
     if (l_child != 0) {
-      NodeTree<T>* right_copy = new NodeTree<T>(*r_child);
+      TreeNode<T>* right_copy = new TreeNode<T>(*r_child);
       // link parent and child nodes
-      parent->right = right_copy;
+      parent_->right = right_copy;
       right_copy->parent = parent_;
 
       copy_sibblings(right_copy, r_child->left, r_child->right);
