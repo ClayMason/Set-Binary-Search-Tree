@@ -320,21 +320,19 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
     assert(root_ != 0);
   }
   else { // if there is a root_
-
-    #if DEBUG
-    //std::cout << "Insert: setting non-root_ node" << std::endl;
-    #endif
     assert(root_ != 0);
 
     // finding which parent node to add key_node to as a child
     bool node_found = false;
     while (!node_found) {
       if ( parent_node->value < key_node->value ) {
-        if (parent_node->left != 0) parent_node = parent_node->left;
+        // key_node's value greater than parent_node's? then go right
+        if (parent_node->right != 0) parent_node = parent_node->right;
         else node_found = true;
       }
       else if ( parent_node->value > key_node->value ) {
-        if (parent_node->right != 0) parent_node = parent_node->right;
+        // key_node's value less than parent_node's? then go left
+        if (parent_node->left != 0) parent_node = parent_node->left;
         else node_found = true;
       }
     }
