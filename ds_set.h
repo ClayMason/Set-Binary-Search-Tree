@@ -1,6 +1,7 @@
 #ifndef ds_set_h_
 #define ds_set_h_
 #include <utility> // pair class
+#include <iostream>
 
 #define DEBUG true
 /*
@@ -40,8 +41,8 @@ class tree_iterator {
     bool is_left_child () {
       return ptr_->is_left_child();
     }
-    tree_iterator<T>& find_next (list_iterator<T>& itr){}
-    tree_iterator<T>& find_prev (list_iterator<T>& itr){}
+    tree_iterator<T>& find_next (const tree_iterator<T>& iter);
+    tree_iterator<T>& find_prev (const tree_iterator<T>& iter);
   public:
     // CONSTRUCTORS
     tree_iterator() : ptr_(NULL) {}
@@ -64,13 +65,13 @@ class tree_iterator {
     tree_iterator<T>& operator++ (int) { // itr++
       return find_next (tree_iterator<T> (*this));
     }
-    tree_iterator<T>& operator++ { // ++iter
+    tree_iterator<T>& operator++ () { // ++iter
       return find_next (*this);
     }
     tree_iterator<T>& operator-- (int) { // itr--
       return find_prev (tree_iterator<T> (*this));
     }
-    tree_iterator<T>& operator-- { // --iter
+    tree_iterator<T>& operator-- () { // --iter
       return find_prev (*this);
     }
 
@@ -79,8 +80,8 @@ class tree_iterator {
 };
 
 template <class T>
-tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
-
+tree_iterator<T>& tree_iterator<T>::find_next (const tree_iterator<T>& iter) {
+  tree_iterator<T> itr(iter);
   // leaf nodes
   if ( itr->is_leaf() ) {
     if ( itr->is_left_child() ) itr->ptr_ = itr->ptr_->parent;
@@ -88,7 +89,7 @@ tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
       // if right leaf
       TreeNode<T>* itr_parent = itr.ptr_->parent;
       TreeNode<T>* itr_child = itr.ptr_;
-      while ( itr_child !=0 && itr_parent !=0 && !itr_child.is_left_child() ) {
+      while ( itr_child !=0 && itr_parent !=0 && !itr_child->is_left_child() ) {
         itr_child = itr_parent;
         itr_parent = itr_parent->parent;
       }
@@ -108,14 +109,17 @@ tree_iterator<T>& tree_iterator<T>::find_next (list_iterator<T>& itr) {
 
   return itr;
 }
-tree_iterator<T>& tree_iterator<T>::find_prev (list_iterator<T>& itr) {
+
+template <class T>
+tree_iterator<T>& tree_iterator<T>::find_prev (const tree_iterator<T>& iter) {
   // find the node previous to this one in the tree in a reverse in-order traversal
+  tree_iterator<T> itr(iter);
   if (itr.is_leaf ()){
     if (itr.is_left_child()) {
       // left child
       TreeNode<T>* t_parent = itr.ptr_->parent;
       TreeNode<T>* t_child = itr.ptr_;
-      while (t_child != 0 && t_parent != 0 && t_child.is_left_child()) {
+      while (t_child != 0 && t_parent != 0 && t_child->is_left_child()) {
         t_child = t_parent;
         t_parent = t_parent->parent;
       }
@@ -142,15 +146,16 @@ template <class T>
 class ds_set {
   private:
     // REPRESENTATION
+    typedef tree_iterator<T> iterator;
     TreeNode<T>* root_;
     int size_;
-    TreeNode<T>& copy_tree(TreeNode<T>* old_tree) {/*TODO*/}
-    void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child) {}
-    void destroy_tree(TreeNode<T>* p) {/*TODO*/}
-    iterator find(const T& key_value, TreeNode<T>* p) {}
-    std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p){/*TODO*/}
-    std::pair<iterator, bool> insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {}
-    void erase (T const& key_value, TreeNode<T>*&p) {/*TODO*/}
+    TreeNode<T>& copy_tree(TreeNode<T>* old_tree);
+    void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child);
+    void destroy_tree(TreeNode<T>* p);
+    iterator find(const T& key_value, TreeNode<T>* p);
+    std::pair<iterator, bool> insert(const T& key_value, TreeNode<T>*& p);
+    std::pair<iterator, bool> insert(TreeNode<T>*& key_node, TreeNode<T>*& p);
+    void erase (T const& key_value, TreeNode<T>*&p);
     void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
       if (p) {
         print_in_order(ostr, p->left);
@@ -160,7 +165,7 @@ class ds_set {
     }
   public:
     // CONSTRUCTORS
-    ds_set () : root_(NULL), size(0) {}
+    ds_set () : root_(NULL), size_(0) {}
     ds_set(const ds_set<T>& old) : size_(old.size_) {
       root_ = this->copy_tree(old.root_);
     }
@@ -181,8 +186,6 @@ class ds_set {
       s.print_in_order(ostr, s.root_);
       return ostr;
     }
-
-    typedef tree_iterator<T> iterator;
     /* O(!) */int size() const {return size_; }
 
     iterator find(const T& key_value) { return find(key_value, root_); }
@@ -195,7 +198,7 @@ class ds_set {
       // which is the leftmost node in the tree
       if ( root_ == 0 ) return this->end();
       else {
-        TreeNode<T>* smallest = root;
+        TreeNode<T>* smallest = root_;
         while (smallest->left != 0) smallest = smallest->left;
         return iterator(smallest);
       }
@@ -216,7 +219,7 @@ std::pair<iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p)
     // if the item does not exist in the set
     // 1. Create a new tree node for key_value
     TreeNode<T>* insert_node = new TreeNode<T>(key_value);
-    return insert(inset_node, p);
+    return insert(insert_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
     return make_pair(to_find, false);
@@ -224,7 +227,7 @@ std::pair<iterator, bool> ds_set<T>::insert(const T& key_value, TreeNode<T>*& p)
 }
 
 template <class T>
-typename iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p) {
+typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p) {
   // Find function should traverse through the tree to see if there is a node
   // with the same value as key_value, and return the irerator pointing at the
   // Node. Otherwise, return null iterator;
@@ -285,7 +288,7 @@ void ds_set<T>::erase (const T& key_value, TreeNode<T>*& p) {
   */
 
   // 1. Check if the value exists in the set
-  typename iterator itr = find(key_value, p);
+  typename ds_set<T>::iterator itr = find(key_value, p);
   if ( itr != iterator(0) ) {
     // if the result of find is not a null iterator
     // 1. Keep track of the left and right children
