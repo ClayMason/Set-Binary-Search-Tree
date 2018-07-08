@@ -171,7 +171,20 @@ class ds_set {
     /* O(!) */int size() const {return size_; }
 
     iterator find(const T& key_value) { return find(key_value, root_); }
-    std::pair<iterator, bool> insert(const T& key_value) { return insert(key_value, root_); }
+    std::pair<iterator, bool> insert(const T& key_value) {
+
+      #if DEBUG
+      std::cout << "Inside Insert: preparing to insert " << key_value << std::endl;
+      #endif
+
+      std::pair<iterator, bool> to_return = insert(key_value, root_);
+
+      #if DEBUG
+      std::cout << "Right before return" << std::endl;
+      #endif
+
+      return to_return;
+    }
     int erase(T const& key_value) { return erase(key_value, root_); }
 
     // ITERATORS
@@ -214,29 +227,31 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
         - If so, return a pair with an iterator pointing to the value, and bool value of  false
         - Otherwise, insert the element into the set and return the iterator pointing to it, and a bool value of true
   */
+
+  // DEBUG
+  printf ("Insert Func: To Find => ");
+  printf("%d - exists? => ", key_value);
+
   iterator to_find = find(key_value, p);
 
-  #if DEBUG
-  std::cout << "Insert Function:\tTo Find: " << key_value << " - exits? => ";
+  // DEBUG
   if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
   else std::cout << "no" << std::endl;
-  #endif
 
   if ( to_find == iterator(0) ) { // i'm actually stupid...
     // if the item does not exist in the set
     // 1. Create a new tree node for key_value
     TreeNode<T>* insert_node = new TreeNode<T>(key_value);
 
-    #if DEBUG
+    // DEUBUG
     std::cout << "Entering Second Insert" << std::endl;
-    #endif
 
     return insert(insert_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
-    #if DEBUG
+
+    // DEBUG
     std::cout << "Returning false pair" << std::endl;
-    #endif
 
     return std::make_pair(to_find, false);
   }

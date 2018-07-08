@@ -8,7 +8,9 @@ int main () {
   ds_set<int> a;
   // insertion test
   for ( int i = 1; i < 20; i++ ) {
+    std::cout << "Head" << std::endl;
     int to_add = i*3;
+    std::cout << "After variable declaration" << std::endl;
     a.insert (to_add);
     std::cout << "Finished adding " << to_add << std::endl;
   }
