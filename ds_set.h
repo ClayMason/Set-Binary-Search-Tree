@@ -78,7 +78,32 @@ class tree_iterator {
 
     // make friend to access private ptr_
     friend class ds_set<T>;
+
+    template <class U>
+    friend void print_iter (tree_iterator<U>& itr);
 };
+// --------------------------------------------------------
+// HELPER FUNCITONS
+template <class T>
+void print_iter (tree_iterator<T>& itr) {
+  // print the iterator passed into the function
+  std::cout << "-----------------------------------------" << std::endl;
+  std::cout << "Iterator" << std::endl;
+  std::cout << "\tvalue: " << *itr << std::endl;
+  std::cout << "\tparent null ? ";
+  if ( itr.ptr_->parent == 0 ) std::cout << "yes" << std::endl;
+  else std::cout << "no => " << itr.ptr_->parent->value << std::endl;
+
+  std::cout << "\tleft child null? ";
+  if ( itr.ptr_->left == 0 ) std::cout << "yes" << std::endl;
+  else std::cout << "no => " << itr.ptr_->left->value << std::endl;
+
+  std::cout << "\tright child null? ";
+  if ( itr.ptr_->right == 0 ) std::cout << "yes" << std::endl;
+  else std::cout << "no => " << itr.ptr->right->value << std::endl;
+  std::cout << "-----------------------------------------" << std::endl;
+}
+// --------------------------------------------------------
 
 template <class T>
 tree_iterator<T>& tree_iterator<T>::find_next (tree_iterator<T>& itr) {
@@ -213,7 +238,7 @@ class ds_set {
     void print_in_order(std::ostream& ostr, const TreeNode<T>* p) const {
       if (p) {
         print_in_order(ostr, p->left);
-        ostr << p->value << std::endl;
+        ostr << p->value << " ";
         print_in_order(ostr, p->right);
       }
     }
