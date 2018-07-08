@@ -215,13 +215,29 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
         - Otherwise, insert the element into the set and return the iterator pointing to it, and a bool value of true
   */
   iterator to_find = find(key_value, p);
-  if ( to_find != iterator(0) ) {
+
+  #if DEBUG
+  std::cout << "Insert Function:\tTo Find: " << key_value << " - exits? => ";
+  if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
+  else std::cout << "no" << std::endl;
+  #endif
+
+  if ( to_find == iterator(0) ) { // i'm actually stupid...
     // if the item does not exist in the set
     // 1. Create a new tree node for key_value
     TreeNode<T>* insert_node = new TreeNode<T>(key_value);
+
+    #if DEBUG
+    std::cout << "Entering Second Insert" << std::endl;
+    #endif
+
     return insert(insert_node, p);
   } else {
     // it the item exists in the set, return pair of the iterator item and bool val of false
+    #if DEBUG
+    std::cout << "Returning false pair" << std::endl;
+    #endif
+
     return std::make_pair(to_find, false);
   }
 }
@@ -247,8 +263,18 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
   if ( root_ == 0 ) { // if there is not root_
     this->root_ = key_node;
     this->root_->parent = 0;
+
+    #if DEBUG
+    std::cout << "Insert: setting root_ node" << std::endl;
+    #endif
+    assert(root_ != 0);
   }
   else { // if there is a root_
+
+    #if DEBUG
+    std::cout << "Insert: setting non-root_ node" << std::endl;
+    #endif
+    assert(root_ != 0);
 
     // finding which parent node to add key_node to as a child
     bool node_found = false;
@@ -270,6 +296,7 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& ke
   }
   // 3. Increment size value
   ++this->size_;
+  std::cout << "Item added" << std::endl;
   return std::make_pair(iterator(key_node), true);
 
 }
