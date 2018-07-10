@@ -50,13 +50,23 @@ int main () {
   // Print the values of the iterator
   typename ds_set<int>::iterator b_itr;
   for ( b_itr = b.begin(); b_itr != b.end(); ++b_itr ) {
-    print_itr(b_itr);
+    print_iter(b_itr, "MAIN - PRINT TEST");
   }
 
   std::cout << b << std::endl;
   assert( b.size() == 15 );
 
-  
+  // reverse iterrator test
+  typename ds_set<int>::iterator b_itr_r = b.begin ();
+  b_itr = b.begin ();
+  ++b_itr;
+
+  while ( b_itr != b.end() ){ ++b_itr; ++b_itr_r; }
+
+  // print backwards
+  for ( b_itr_r; b_itr_r != b.end(); --b_itr_r ) {
+    print_iter(b_itr_r, "REVERSE ITERATION");
+  }
 
   return 0;
 }
