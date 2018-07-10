@@ -68,5 +68,21 @@ int main () {
     print_iter(b_itr_r, "REVERSE ITERATION");
   }
 
+  // erase test
+  ds_set<std::string> c;
+  c.insert("delta");
+  c.insert("bravo");
+  c.insert("foxtrot");
+  c.insert("alpha");
+  c.insert("charlie");
+  c.insert("epsilon");
+  c.insert("galio");
+
+  assert( c.size() == 7 );
+  std::cout << "C SET => " << c << std::endl;
+  std::cout << "Erasing 'charlie'" << std::endl;
+  c.erase("charlie");
+  std::cout << "After erase: " << c << std::endl;
+
   return 0;
 }
