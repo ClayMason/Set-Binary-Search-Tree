@@ -82,13 +82,19 @@ int main () {
   std::cout << "C SET #1 => " << c << std::endl;
   std::cout << "Erasing 'charlie'" << std::endl;
   c.erase("charlie");
-  std::cout << "After erase: " << c << std::endl;
+  std::cout << "After erase: " << c << std::endl; // SUCCESS
 
   // erasing inside a node (non-leaf, non-root)
   c.insert("charlie");
   std::cout << "C SET #2 => " << c << std::endl;
   std::cout << "Erasing 'bravo'" << std::endl;
   c.erase("bravo");
+  std::cout << "After erase: " << c << std::endl; // SUCCESS
+
+  // erasing root node
+  c.insert("bravo");
+  std::cout << "C SET #3 => " << c << std::endl;
+  c.erase("delta"); // root node
   std::cout << "After erase: " << c << std::endl;
 
   return 0;
