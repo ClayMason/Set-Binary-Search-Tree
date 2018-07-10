@@ -97,5 +97,32 @@ int main () {
   c.erase("delta"); // root node
   std::cout << "After erase: " << c << std::endl;
 
+  // copy_constructor test
+  ds_set<int> d;
+  d.insert(8);
+  d.insert(4);
+  d.insert(12);
+  d.insert(2);
+  d.insert(6);
+  d.insert(10);
+  d.insert(14);
+  d.insert(1);
+  d.insert(3);
+  d.insert(5);
+  d.insert(7);
+  d.insert(9);
+  d.insert(11);
+  d.insert(13);
+  d.insert(15);
+
+  std::cout << "D: " << d << std::endl;
+
+  // copy set d
+  ds_set<int> d_copy(d);
+  std::cout << "D Copy: " << d_copy << std::endl;
+  assert(d.size() == 15);
+  assert(d_copy.size() == 15);
+  assert(&d != &d_copy);
+
   return 0;
 }
