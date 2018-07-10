@@ -29,5 +29,34 @@ int main () {
   }
   std::cout << std::endl;
 
+  // balanced tree insertion test
+  ds_set<int> b;
+  b.insert(8);
+  b.insert(4);
+  b.insert(12);
+  b.insert(2);
+  b.insert(6);
+  b.insert(10);
+  b.insert(14);
+  b.insert(1);
+  b.insert(3);
+  b.insert(5);
+  b.insert(7);
+  b.insert(9);
+  b.insert(11);
+  b.insert(13);
+  b.insert(15);
+
+  // Print the values of the iterator
+  typename ds_set<int>::iterator b_itr;
+  for ( b_itr = b.begin(); b_itr != b.end(); ++b_itr ) {
+    print_itr(b_itr);
+  }
+
+  std::cout << b << std::endl;
+  assert( b.size() == 15 );
+
+  
+
   return 0;
 }
