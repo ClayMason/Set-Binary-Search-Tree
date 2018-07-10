@@ -213,7 +213,7 @@ class ds_set {
 
       return to_return;
     }
-    int erase(T const& key_value) { return erase(key_value, root_); }
+    void erase(T const& key_value) { erase(key_value, root_); }
 
     // ITERATORS
     iterator begin () const {
@@ -262,7 +262,7 @@ std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(const T& key_val
   //std::cout << key_value << " - exists? => " << std::endl;
 
   iterator to_find = find(key_value, p);
-  print_iter(to_find, "TO FIND");
+  //print_iter(to_find, "TO FIND");
 
   // DEBUG
   //if ( to_find != iterator(0) ) std::cout << "yes" << std::endl;
@@ -308,48 +308,50 @@ typename ds_set<T>::iterator ds_set<T>::find(const T& key_value, TreeNode<T>* p)
 
 template <class T>
 std::pair<typename ds_set<T>::iterator, bool> ds_set<T>::insert(TreeNode<T>*& key_node, TreeNode<T>*& p) {
-  // TODO
-  TreeNode<T>* parent_node = p;
-  if ( root_ == 0 ) { // if there is not root_
-    this->root_ = key_node;
-    this->root_->parent = 0;
+  if (key_node != 0) {
+    // TODO
+    TreeNode<T>* parent_node = p;
+    if ( root_ == 0 ) { // if there is not root_
+      this->root_ = key_node;
+      this->root_->parent = 0;
 
-    #if DEBUG
-    //std::cout << "Insert: setting root_ node" << std::endl;
-    #endif
-    assert(root_ != 0);
-  }
-  else { // if there is a root_
-    assert(root_ != 0);
-
-    // finding which parent node to add key_node to as a child
-    bool node_found = false;
-    while (!node_found) {
-      if ( parent_node->value < key_node->value ) {
-        // key_node's value greater than parent_node's? then go right
-        if (parent_node->right != 0) parent_node = parent_node->right;
-        else node_found = true;
-      }
-      else if ( parent_node->value > key_node->value ) {
-        // key_node's value less than parent_node's? then go left
-        if (parent_node->left != 0) parent_node = parent_node->left;
-        else node_found = true;
-      }
+      #if DEBUG
+      //std::cout << "Insert: setting root_ node" << std::endl;
+      #endif
+      assert(root_ != 0);
     }
+    else { // if there is a root_
+      assert(root_ != 0);
 
-    // adding it -- lesser value on left, greater value on right
-    if ( parent_node->value > key_node->value ) parent_node->left = key_node;
-    else if ( parent_node->value < key_node->value ) parent_node->right = key_node;
-    key_node->parent = parent_node;
-  }
-  // 3. Increment size value
-  ++this->size_;
-  //std::cout << "Item added" << std::endl;
+      // finding which parent node to add key_node to as a child
+      bool node_found = false;
+      while (!node_found) {
+        if ( parent_node->value < key_node->value ) {
+          // key_node's value greater than parent_node's? then go right
+          if (parent_node->right != 0) parent_node = parent_node->right;
+          else node_found = true;
+        }
+        else if ( parent_node->value > key_node->value ) {
+          // key_node's value less than parent_node's? then go left
+          if (parent_node->left != 0) parent_node = parent_node->left;
+          else node_found = true;
+        }
+      }
 
-  iterator to_print(key_node);
-  print_iter(to_print, "RETURN FROM INSERT");
+      // adding it -- lesser value on left, greater value on right
+      if ( parent_node->value > key_node->value ) parent_node->left = key_node;
+      else if ( parent_node->value < key_node->value ) parent_node->right = key_node;
+      key_node->parent = parent_node;
+    }
+    // 3. Increment size value
+    ++this->size_;
+    //std::cout << "Item added" << std::endl;
 
-  return std::make_pair(iterator(key_node), true);
+    iterator to_print(key_node);
+    //print_iter(to_print, "RETURN FROM INSERT");
+
+    return std::make_pair(iterator(key_node), true);
+  } else return std::make_pair(iterator(0), false);
 
 }
 
@@ -367,7 +369,10 @@ void ds_set<T>::erase (const T& key_value, TreeNode<T>*& p) {
   */
 
   // 1. Check if the value exists in the set
+  std::cout << "In erase: before find." << std::endl;
   typename ds_set<T>::iterator itr = find(key_value, p);
+  std::cout << "In erase: after find." << std::endl;
+  print_iter(itr, "ERASE ITERATOR FOUND");
   if ( itr != iterator(0) ) {
     // if the result of find is not a null iterator
     // 1. Keep track of the left and right children
@@ -376,15 +381,23 @@ void ds_set<T>::erase (const T& key_value, TreeNode<T>*& p) {
 
     // 2. Set pointers to this tree node to null
     if (itr.ptr_->parent != 0) {
-      if ( itr.ptr_->parent->right == itr.ptr_ ) itr.ptr_->parent->right = 0;
-      else if ( itr.ptr_->parent->left == itr.ptr_ ) itr.ptr_->parent->left = 0;
+      if ( itr.ptr_->parent->right == itr.ptr_ ) {
+        itr.ptr_->parent->right = 0;
+        std::cout << "reset parent ptr (right)" << std::endl;
+      }
+      else if ( itr.ptr_->parent->left == itr.ptr_ ) {
+        itr.ptr_->parent->left = 0;
+        std::cout << "reset parent ptr (left)" << std::endl;
+      }
     }
     if ( to_left != 0 ) to_left->parent = 0;
     if ( to_right != 0 ) to_right->parent = 0;
+    std::cout << "Reset left and right pointers of " << *itr << std::endl;
 
     // 3. Delete the current tree node
     delete itr.ptr_;
     itr.ptr_ = 0;
+    std::cout << "Deallocated pointer being erased" << std::endl;
 
     // 4. Redistribute the children of the deleted node
     insert (to_left, this->root_);
