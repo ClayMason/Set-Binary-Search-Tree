@@ -232,7 +232,7 @@ class ds_set {
     // REPRESENTATION
     TreeNode<T>* root_;
     int size_;
-    TreeNode<T>& copy_tree(TreeNode<T>* old_tree);
+    TreeNode<T>* copy_tree(TreeNode<T>* old_tree);
     void copy_sibblings (TreeNode<T>* parent_, TreeNode<T>* l_child, TreeNode<T>* r_child);
     void destroy_tree(TreeNode<T>* p);
     iterator find(const T& key_value, TreeNode<T>* p);
@@ -424,7 +424,7 @@ void ds_set<T>::destroy_tree(TreeNode<T>* p) {
 }
 
 template <class T>
-TreeNode<T>& ds_set<T>::copy_tree(TreeNode<T>* old_tree) {
+TreeNode<T>* ds_set<T>::copy_tree(TreeNode<T>* old_tree) {
   // copy the tree_nodes and key_values into this tree
   // -- recursive
 
