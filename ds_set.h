@@ -228,6 +228,19 @@ class ds_set {
       }
     }
     iterator end () const { return iterator(0); }
+
+    iterator rbegin () {
+      if ( root_ == 0 ) return this->end ();
+      else {
+        TreeNode<T>* largest = root_;
+        while (largest->right != 0) largest = largest->right;
+        return iterator(largest);
+      }
+    }
+
+    itreator rend const () {
+      return iterator(0);
+    }
   private:
     // REPRESENTATION
     TreeNode<T>* root_;
