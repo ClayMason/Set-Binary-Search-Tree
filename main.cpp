@@ -79,9 +79,16 @@ int main () {
   c.insert("galio");
 
   assert( c.size() == 7 );
-  std::cout << "C SET => " << c << std::endl;
+  std::cout << "C SET #1 => " << c << std::endl;
   std::cout << "Erasing 'charlie'" << std::endl;
   c.erase("charlie");
+  std::cout << "After erase: " << c << std::endl;
+
+  // erasing inside a node (non-leaf, non-root)
+  c.insert("charlie");
+  std::cout << "C SET #2 => " << c << std::endl;
+  std::cout << "Erasing 'bravo'" << std::endl;
+  c.erase("bravo");
   std::cout << "After erase: " << c << std::endl;
 
   return 0;
